@@ -60,10 +60,6 @@ if 'dados' not in st.session_state:
             "ida": [{"t1": "Pendente", "t2": "Pendente", "vencedor": "Nenhum"} for _ in range(6)],
             "volta": [{"t1": "Pendente", "t2": "Pendente", "vencedor": "Nenhum"} for _ in range(6)]
         }
-
-# --- INTERFACE WEB ---
-# (O resto do seu código começa aqui, com o st.title, as tabs, etc.)
-
 # --- INTERFACE WEB ---
 st.title("🏆 Torneio AOE II - Pontos Corridos")
 
