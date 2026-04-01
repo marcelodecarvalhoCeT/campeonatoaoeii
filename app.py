@@ -139,15 +139,35 @@ with tab1:
     def render_fase(fase_key, titulo, col):
         with col:
             st.subheader(titulo)
+            
+            # --- CABEÇALHO (Aparece só uma vez no topo) ---
+            h1, hx1, h2, hx2, h3 = st.columns([4, 1, 4, 1, 4])
+            with h3:
+                # O markdown com HTML ajuda a centralizar e dar destaque ao título
+                st.markdown("<p style='text-align: center; font-weight: bold; margin-bottom: 0px; color: #555;'>VENCEDOR</p>", unsafe_allow_html=True)
+
+            # --- LINHAS DE PARTIDA ---
             for i in range(6):
                 p = st.session_state.dados[fase_key][i]
-                c1, c2, c3 = st.columns([2, 2, 2])
+                
+                # Criando as 5 colunas (Equipe, X, Equipe, Seta, Vencedor)
+                c1, cx1, c2, cx2, c3 = st.columns([4, 1, 4, 1, 4])
                 
                 with c1:
                     t1 = st.selectbox("Equipe 1", ["Pendente"] + TEAM_NAMES, index=(["Pendente"] + TEAM_NAMES).index(p["t1"]), key=f"{fase_key}_t1_{i}", label_visibility="collapsed")
+                
+                with cx1:
+                    # O margin-top alinha o 'X' com o meio da caixinha
+                    st.markdown("<p style='text-align: center; margin-top: 8px;'>✖️</p>", unsafe_allow_html=True)
+                
                 with c2:
                     t2 = st.selectbox("Equipe 2", ["Pendente"] + TEAM_NAMES, index=(["Pendente"] + TEAM_NAMES).index(p["t2"]), key=f"{fase_key}_t2_{i}", label_visibility="collapsed")
                 
+                with cx2:
+                    # Coloquei uma setinha para indicar o resultado, mas pode trocar por "X" se preferir!
+                    st.markdown("<p style='text-align: center; margin-top: 8px;'>➡️</p>", unsafe_allow_html=True)
+                
+                # Lógica para mostrar apenas os times selecionados como opções de vitória
                 opcoes_venc = ["Nenhum"]
                 if t1 != "Pendente": opcoes_venc.append(t1)
                 if t2 != "Pendente": opcoes_venc.append(t2)
@@ -157,16 +177,18 @@ with tab1:
                 with c3:
                     venc = st.selectbox("Vencedor", opcoes_venc, index=opcoes_venc.index(venc_atual), key=f"{fase_key}_venc_{i}", label_visibility="collapsed")
 
+                # Se houver qualquer mudança, salva no Sheets
                 if t1 != p["t1"] or t2 != p["t2"] or venc != p["vencedor"]:
                     st.session_state.dados[fase_key][i]["t1"] = t1
                     st.session_state.dados[fase_key][i]["t2"] = t2
                     st.session_state.dados[fase_key][i]["vencedor"] = venc
-                    salvar_dados()
+                    salvar_no_sheets()
                     st.rerun()
 
-    render_fase("ida", "⚔️ First Season (Arabia)", col_ida)
-    render_fase("volta", "🛡️ Revanche (Derrotado Decide)", col_volta)
-
+    # --- CHAMADAS DA FUNÇÃO COM OS NOMES NOVOS ---
+    render_fase("ida", "⚔️ Primeira Rodada", col_ida)
+    render_fase("volta", "🛡️ Revanche", col_volta)
+    
 with tab2:
     st.markdown("""
     ### ⚙️ CONFIGURAÇÕES GERAIS DO TORNEIO ⚙️
