@@ -68,7 +68,6 @@ with st.sidebar:
         with st.spinner("Enviando para o Google Sheets..."):
             salvar_no_sheets()
             st.success("Tudo salvo com sucesso!")
-)
 
 # 4. INICIALIZAÇÃO DO ESTADO
 if 'dados' not in st.session_state:
