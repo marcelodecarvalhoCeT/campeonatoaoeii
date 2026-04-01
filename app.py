@@ -43,7 +43,7 @@ if 'dados' not in st.session_state:
             "ida": [{"t1": "Pendente", "t2": "Pendente", "vencedor": "Nenhum"} for _ in range(6)],
             "volta": [{"t1": "Pendente", "t2": "Pendente", "vencedor": "Nenhum"} for _ in range(6)]
         }
-def salvar_dados():
+def salvar_no_sheets():
     with open(ARQUIVO_SAVE, 'w', encoding='utf-8') as f:
         json.dump(st.session_state.dados, f, ensure_ascii=False, indent=4)
 
@@ -62,7 +62,7 @@ with tab1:
                 nova_civ = st.selectbox(player, CIVS, index=CIVS.index(st.session_state.dados["civs"][player]), key=f"civ_{player}")
                 if nova_civ != st.session_state.dados["civs"][player]:
                     st.session_state.dados["civs"][player] = nova_civ
-                    salvar_dados()
+                    salvar_no_sheets()
                     st.rerun()
 
     st.subheader("🏆 Tabela de Classificação")
