@@ -8,13 +8,15 @@ st.set_page_config(page_title="Torneio AOE II", layout="wide")
 
 ARQUIVO_SAVE = "save_torneio.json"
 
-TEAMS_INFO = {
-    "Dupla A": "André + Pedro",
-    "Dupla B": "Ariel + Teo",
-    "Dupla C": "Tales + Vicente",
-    "Dupla D": "Marcelo + Nilo"
+# Dicionário atualizado separando os jogadores
+PLAYERS_INFO = {
+    "Dupla A": ["André", "Pedro"],
+    "Dupla B": ["Ariel", "Teo"],
+    "Dupla C": ["Tales", "Vicente"],
+    "Dupla D": ["Marcelo", "Nilo"]
 }
-TEAM_NAMES = list(TEAMS_INFO.keys())
+TEAM_NAMES = list(PLAYERS_INFO.keys())
+ALL_PLAYERS = [jogador for dupla in PLAYERS_INFO.values() for jogador in dupla]
 
 CIVS = ["Pendente", "Armênios", "Astecas", "Bengalis", "Bizantinos", "Boêmios", "Bretões", 
         "Búlgaros", "Borgonheses", "Birmaneses", "Celtas", "Chineses", "Cumanos", 
@@ -27,11 +29,19 @@ CIVS = ["Pendente", "Armênios", "Astecas", "Bengalis", "Bizantinos", "Boêmios"
 # Inicialização e Carregamento do Save
 if 'dados' not in st.session_state:
     if os.path.exists(ARQUIVO_SAVE):
-        with open(ARQUIVO_SAVE, 'r', encoding='utf-8') as f:
-            st.session_state.dados = json.load(f)
-    else:
+        try:
+            with open(ARQUIVO_SAVE, 'r', encoding='utf-8') as f:
+                st.session_state.dados = json.load(f)
+                # Validação rápida para evitar crash com save antigo
+                if "Dupla A" in st.session_state.dados["civs"]:
+                    st.error("⚠️ Formato de save antigo detectado! Por favor, delete o arquivo 'save_torneio.json' e reinicie o app.")
+                    st.stop()
+        except:
+            pass
+    
+    if 'dados' not in st.session_state:
         st.session_state.dados = {
-            "civs": {t: "Pendente" for t in TEAM_NAMES},
+            "civs": {player: "Pendente" for player in ALL_PLAYERS},
             "ida": [{"t1": "Pendente", "t2": "Pendente", "vencedor": "Nenhum"} for _ in range(6)],
             "volta": [{"t1": "Pendente", "t2": "Pendente", "vencedor": "Nenhum"} for _ in range(6)]
         }
@@ -48,18 +58,30 @@ tab1, tab2 = st.tabs(["Tabela e Jogos", "Configurações e Regras"])
 with tab1:
     st.subheader("🏛️ Seleção de Civilizações Ocultas")
     cols = st.columns(4)
-    for i, team in enumerate(TEAM_NAMES):
+    for i, (team, players) in enumerate(PLAYERS_INFO.items()):
         with cols[i]:
-            nova_civ = st.selectbox(f"{team}", CIVS, index=CIVS.index(st.session_state.dados["civs"][team]), key=f"civ_{team}")
-            if nova_civ != st.session_state.dados["civs"][team]:
-                st.session_state.dados["civs"][team] = nova_civ
-                salvar_dados()
-                st.rerun()
+            st.markdown(f"**{team}**") # Título da dupla
+            for player in players:
+                nova_civ = st.selectbox(player, CIVS, index=CIVS.index(st.session_state.dados["civs"][player]), key=f"civ_{player}")
+                if nova_civ != st.session_state.dados["civs"][player]:
+                    st.session_state.dados["civs"][player] = nova_civ
+                    salvar_dados()
+                    st.rerun()
 
     st.subheader("🏆 Tabela de Classificação")
     
-    # Lógica de Pontuação
-    stats = {k: {"Dupla": k, "Jogadores": TEAMS_INFO[k], "Civilização": st.session_state.dados["civs"][k], "Pontos": 0, "Vitórias": 0, "Derrotas": 0, "Partidas": 0} for k in TEAM_NAMES}
+    # Lógica de Pontuação e Formatação da Tabela
+    stats = {}
+    for k in TEAM_NAMES:
+        j1, j2 = PLAYERS_INFO[k][0], PLAYERS_INFO[k][1]
+        civ_texto = f'{st.session_state.dados["civs"][j1]} + {st.session_state.dados["civs"][j2]}'
+        
+        stats[k] = {
+            "Dupla": k, 
+            "Jogadores": f"{j1} & {j2}", 
+            "Civilizações": civ_texto, 
+            "Pontos": 0, "Vitórias": 0, "Derrotas": 0, "Partidas": 0
+        }
     
     for fase in ["ida", "volta"]:
         for p in st.session_state.dados[fase]:
