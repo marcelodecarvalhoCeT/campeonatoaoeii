@@ -61,14 +61,14 @@ def carregar_do_sheets():
     }
     return dados
 
-def salvar_no_sheets():
-    df_civs = pd.DataFrame([{"Jogador": k, "Civilizacao": v} for k, v in st.session_state.dados["civs"].items()])
-    df_ida = pd.DataFrame(st.session_state.dados["ida"])
-    df_volta = pd.DataFrame(st.session_state.dados["volta"])
-    
-    conn.update(worksheet="Civs", data=df_civs)
-    conn.update(worksheet="Ida", data=df_ida)
-    conn.update(worksheet="Volta", data=df_volta)
+with st.sidebar:
+    st.markdown("### ☁️ Sincronização")
+    # O botão agora chama a sua função correta
+    if st.button("💾 Salvar Alterações na Nuvem", use_container_width=True):
+        with st.spinner("Enviando para o Google Sheets..."):
+            salvar_no_sheets()
+            st.success("Tudo salvo com sucesso!")
+)
 
 # 4. INICIALIZAÇÃO DO ESTADO
 if 'dados' not in st.session_state:
