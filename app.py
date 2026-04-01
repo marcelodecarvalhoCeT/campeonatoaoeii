@@ -34,10 +34,30 @@ def carregar_do_sheets():
     df_ida = conn.read(worksheet="Ida")
     df_volta = conn.read(worksheet="Volta")
     
+    # 1. Carrega as civs, mas se a planilha estiver vazia, cria o padrão "Pendente"
+    civs_dict = {}
+    if getattr(df_civs, 'empty', True) == False and "Jogador" in df_civs.columns:
+        civs_dict = {row["Jogador"]: row["Civilizacao"] for _, row in df_civs.iterrows()}
+    
+    # Garante que todos os jogadores (André, Pedro, Marcelo...) existam na lista
+    for player in ALL_PLAYERS:
+        if player not in civs_dict:
+            civs_dict[player] = "Pendente"
+            
+    # 2. Carrega as partidas de Ida. Se estiver vazio, cria as 6 partidas padrão
+    ida_list = df_ida.to_dict('records') if getattr(df_ida, 'empty', True) == False else []
+    if len(ida_list) == 0:
+        ida_list = [{"t1": "Pendente", "t2": "Pendente", "vencedor": "Nenhum"} for _ in range(6)]
+        
+    # 3. Carrega as partidas de Volta. Se estiver vazio, cria as 6 partidas padrão
+    volta_list = df_volta.to_dict('records') if getattr(df_volta, 'empty', True) == False else []
+    if len(volta_list) == 0:
+        volta_list = [{"t1": "Pendente", "t2": "Pendente", "vencedor": "Nenhum"} for _ in range(6)]
+
     dados = {
-        "civs": {row["Jogador"]: row["Civilizacao"] for _, row in df_civs.iterrows()},
-        "ida": df_ida.to_dict('records'),
-        "volta": df_volta.to_dict('records')
+        "civs": civs_dict,
+        "ida": ida_list,
+        "volta": volta_list
     }
     return dados
 
