@@ -2,12 +2,30 @@ import streamlit as st
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 
-# Configuração da página Web
-st.set_page_config(page_title="Torneio AOE II", layout="wide")
+# 1. PRIMEIRO: Defina os dados básicos (O que estava dando erro)
+PLAYERS_INFO = {
+    "Dupla A": ["André", "Pedro"],
+    "Dupla B": ["Ariel", "Teo"],
+    "Dupla C": ["Tales", "Vicente"],
+    "Dupla D": ["Marcelo", "Nilo"]
+}
+TEAM_NAMES = list(PLAYERS_INFO.keys())
+ALL_PLAYERS = [jogador for dupla in PLAYERS_INFO.values() for jogador in dupla]
 
-# --- CONEXÃO COM GOOGLE SHEETS ---
+CIVS = ["Pendente", "Armênios", "Astecas", "Bengalis", "Bizantinos", "Boêmios", "Bretões", 
+        "Búlgaros", "Borgonheses", "Birmaneses", "Celtas", "Chineses", "Cumanos", 
+        "Dravidianos", "Espanhóis", "Etiopes", "Francos", "Georgianos", "Godos", 
+        "Gurjaras", "Hindustanis", "Hunos", "Incas", "Italianos", "Japoneses", 
+        "Khmer", "Coreanos", "Lituanos", "Magiares", "Maias", "Malaios", "Malis", 
+        "Mongóis", "Persas", "Poloneses", "Portugueses", "Romanos", "Sarracenos", 
+        "Sicilianos", "Eslavos", "Tártaros", "Teutões", "Turcos", "Vietnamitas", "Vikings"]
+
+# 2. DEPOIS: A conexão com o Google
 conn = st.connection("gsheets", type=GSheetsConnection)
 
+# 3. ENTÃO: As funções de carregar e salvar
+def carregar_do_sheets():
+  
 def carregar_do_sheets():
     # Lê as 3 abas que você criou
     df_civs = conn.read(worksheet="Civs")
