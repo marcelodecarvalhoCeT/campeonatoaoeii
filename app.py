@@ -129,7 +129,7 @@ with tab1:
     df = pd.DataFrame(list(stats.values()))
     df = df.sort_values(by=["Pontos", "Vitórias"], ascending=[False, False]).reset_index(drop=True)
     df.index += 1 
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(df, width='stretch')
 
     st.divider()
 
