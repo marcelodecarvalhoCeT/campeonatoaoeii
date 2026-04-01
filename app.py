@@ -1,8 +1,13 @@
 import streamlit as st
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
+import json
+import os
 
-# 1. PRIMEIRO: Defina os dados básicos (O que estava dando erro)
+# Configuração da página Web
+st.set_page_config(page_title="Torneio AOE II", layout="wide")
+
+# 1. VARIÁVEIS DO TORNEIO
 PLAYERS_INFO = {
     "Dupla A": ["André", "Pedro"],
     "Dupla B": ["Ariel", "Teo"],
@@ -20,19 +25,15 @@ CIVS = ["Pendente", "Armênios", "Astecas", "Bengalis", "Bizantinos", "Boêmios"
         "Mongóis", "Persas", "Poloneses", "Portugueses", "Romanos", "Sarracenos", 
         "Sicilianos", "Eslavos", "Tártaros", "Teutões", "Turcos", "Vietnamitas", "Vikings"]
 
-# 2. DEPOIS: A conexão com o Google
+# 2. CONEXÃO COM O GOOGLE SHEETS
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# 3. ENTÃO: As funções de carregar e salvar
+# 3. FUNÇÕES DE DADOS (Com a indentação correta)
 def carregar_do_sheets():
-  
-def carregar_do_sheets():
-    # Lê as 3 abas que você criou
     df_civs = conn.read(worksheet="Civs")
     df_ida = conn.read(worksheet="Ida")
     df_volta = conn.read(worksheet="Volta")
     
-    # Reconstrói o dicionário 'dados' para o seu código antigo não quebrar
     dados = {
         "civs": {row["Jogador"]: row["Civilizacao"] for _, row in df_civs.iterrows()},
         "ida": df_ida.to_dict('records'),
@@ -41,7 +42,6 @@ def carregar_do_sheets():
     return dados
 
 def salvar_no_sheets():
-    # Converte o dicionário de volta para tabelas e envia ao Google
     df_civs = pd.DataFrame([{"Jogador": k, "Civilizacao": v} for k, v in st.session_state.dados["civs"].items()])
     df_ida = pd.DataFrame(st.session_state.dados["ida"])
     df_volta = pd.DataFrame(st.session_state.dados["volta"])
@@ -50,20 +50,19 @@ def salvar_no_sheets():
     conn.update(worksheet="Ida", data=df_ida)
     conn.update(worksheet="Volta", data=df_volta)
 
-# Inicialização
+# 4. INICIALIZAÇÃO DO ESTADO
 if 'dados' not in st.session_state:
     try:
         st.session_state.dados = carregar_do_sheets()
     except:
-        # Se a planilha estiver vazia no começo, ele cria o padrão
         st.session_state.dados = {
             "civs": {player: "Pendente" for player in ALL_PLAYERS},
             "ida": [{"t1": "Pendente", "t2": "Pendente", "vencedor": "Nenhum"} for _ in range(6)],
             "volta": [{"t1": "Pendente", "t2": "Pendente", "vencedor": "Nenhum"} for _ in range(6)]
         }
-def salvar_no_sheets():
-    with open(ARQUIVO_SAVE, 'w', encoding='utf-8') as f:
-        json.dump(st.session_state.dados, f, ensure_ascii=False, indent=4)
+
+# --- INTERFACE WEB ---
+# (O resto do seu código começa aqui, com o st.title, as tabs, etc.)
 
 # --- INTERFACE WEB ---
 st.title("🏆 Torneio AOE II - Pontos Corridos")
