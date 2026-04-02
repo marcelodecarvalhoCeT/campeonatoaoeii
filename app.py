@@ -29,6 +29,11 @@ CIVS = ["Pendente", "Armênios", "Astecas", "Bengalis", "Bizantinos", "Boêmios"
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # 3. FUNÇÕES DE DADOS (Com a indentação correta)
+def salvar_dados():
+    """Converte o dicionário atual para DataFrames e envia para o Sheets."""
+    # Atualiza Civs
+    df_civs = pd.DataFrame(list(st.session_state.dados["civs"].items()), columns=["Jogador", "Civilizacao"])
+    conn.update(worksheet="Civs", data=df_civs)
 def carregar_do_sheets():
     df_civs = conn.read(worksheet="Civs")
     df_ida = conn.read(worksheet="Ida")
@@ -66,9 +71,17 @@ with st.sidebar:
     # O botão agora chama a sua função correta
     if st.button("💾 Salvar Alterações na Nuvem", use_container_width=True):
         with st.spinner("Enviando para o Google Sheets..."):
-           def salvar_no_sheets()
+            salvar_no_sheets()
             st.success("Tudo salvo com sucesso!")
 
+    
+    # Atualiza Ida e Volta
+    conn.update(worksheet="Ida", data=pd.DataFrame(st.session_state.dados["ida"]))
+    conn.update(worksheet="Volta", data=pd.DataFrame(st.session_state.dados["volta"]))
+    
+    # Limpa o cache de leitura para o Streamlit baixar os dados novos do Google
+    st.cache_data.clear()
+    
 # 4. INICIALIZAÇÃO DO ESTADO
 if 'dados' not in st.session_state:
     try:
