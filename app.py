@@ -65,11 +65,24 @@ def carregar_do_sheets():
 if 'dados' not in st.session_state:
     st.session_state.dados = carregar_do_sheets()
     
-    def salvar_no_sheets():
+   def salvar_no_sheets():
+    # Repare no espaço vazio aqui no começo de cada linha abaixo!
     """Converte o dicionário atual para DataFrames e envia para o Sheets."""
-    # Atualiza Civs
+    
+    # 1. Prepara e salva as Civilizações
     df_civs = pd.DataFrame(list(st.session_state.dados["civs"].items()), columns=["Jogador", "Civilizacao"])
     conn.update(worksheet="Civs", data=df_civs)
+    
+    # 2. Prepara e salva as Partidas de Ida
+    df_ida = pd.DataFrame(st.session_state.dados["ida"])
+    conn.update(worksheet="Ida", data=df_ida)
+    
+    # 3. Prepara e salva as Partidas de Volta
+    df_volta = pd.DataFrame(st.session_state.dados["volta"])
+    conn.update(worksheet="Volta", data=df_volta)
+    
+    # Limpa a memória para o app baixar a versão atualizada
+    st.cache_data.clear()
     
 with st.sidebar:
     st.markdown("### ☁️ Sincronização")
