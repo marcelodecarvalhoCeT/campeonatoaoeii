@@ -29,7 +29,7 @@ CIVS = ["Pendente", "Armênios", "Astecas", "Bengalis", "Bizantinos", "Boêmios"
 conn = st.connection("gsheets", type=GSheetsConnection)
 
 # 3. FUNÇÕES DE DADOS (Com a indentação correta)
-def salvar_dados():
+def salvar_no_sheets():
     """Converte o dicionário atual para DataFrames e envia para o Sheets."""
     # Atualiza Civs
     df_civs = pd.DataFrame(list(st.session_state.dados["civs"].items()), columns=["Jogador", "Civilizacao"])
