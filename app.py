@@ -65,7 +65,17 @@ def carregar_do_sheets():
         "volta": volta_list
     }
     return dados
-
+    
+    # --- INICIALIZAÇÃO DA MEMÓRIA ---
+if 'dados' not in st.session_state:
+    st.session_state.dados = carregar_do_sheets()
+    
+    def salvar_no_sheets():
+    """Converte o dicionário atual para DataFrames e envia para o Sheets."""
+    # Atualiza Civs
+    df_civs = pd.DataFrame(list(st.session_state.dados["civs"].items()), columns=["Jogador", "Civilizacao"])
+    conn.update(worksheet="Civs", data=df_civs)
+    
 with st.sidebar:
     st.markdown("### ☁️ Sincronização")
     # O botão agora chama a sua função correta
