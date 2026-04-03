@@ -91,14 +91,6 @@ with st.sidebar:
         with st.spinner("Enviando para o Google Sheets..."):
             salvar_no_sheets()
             st.success("Tudo salvo com sucesso!")
-
-    
-    # Atualiza Ida e Volta
-    conn.update(worksheet="Ida", data=pd.DataFrame(st.session_state.dados["ida"]))
-    conn.update(worksheet="Volta", data=pd.DataFrame(st.session_state.dados["volta"]))
-    
-    # Limpa o cache de leitura para o Streamlit baixar os dados novos do Google
-    st.cache_data.clear()
     
 # 4. INICIALIZAÇÃO DO ESTADO
 if 'dados' not in st.session_state:
@@ -125,8 +117,7 @@ with tab1:
                 nova_civ = st.selectbox(player, CIVS, index=CIVS.index(st.session_state.dados["civs"][player]), key=f"civ_{player}")
                 if nova_civ != st.session_state.dados["civs"][player]:
                     st.session_state.dados["civs"][player] = nova_civ
-                    salvar_no_sheets()
-                    st.rerun()
+                    
 
     st.subheader("🏆 Tabela de Classificação")
     
