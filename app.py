@@ -65,7 +65,7 @@ def carregar_do_sheets():
 if 'dados' not in st.session_state:
     st.session_state.dados = carregar_do_sheets()
     
-   def salvar_no_sheets():
+def salvar_no_sheets():
     # Repare no espaço vazio aqui no começo de cada linha abaixo!
     """Converte o dicionário atual para DataFrames e envia para o Sheets."""
     
