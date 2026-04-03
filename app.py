@@ -212,9 +212,7 @@ with tab1:
                     st.session_state.dados[fase_key][i]["t1"] = t1
                     st.session_state.dados[fase_key][i]["t2"] = t2
                     st.session_state.dados[fase_key][i]["vencedor"] = venc
-                    salvar_no_sheets()
-                    st.rerun()
-
+                   
     # --- CHAMADAS DA FUNÇÃO COM OS NOMES NOVOS ---
     render_fase("ida", "⚔️ Primeira Rodada", col_ida)
     render_fase("volta", "🛡️ Revanche", col_volta)
